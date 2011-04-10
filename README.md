@@ -17,7 +17,7 @@ It takes a list of telephone numbers who shall receive the message and returns a
 ## Example
 
 	sms := NewBulkSMSSender("username", "password)
-	sms.Testmode = 1	//don't send the sms, just perform an API supported test
+	sms.Testmode = 1			//don't send the sms, just perform an API supported test
 	sms.RoutingGroup = 1	//let's use the cheap eco route
 	
 	msg := "hi, this is a test"
@@ -26,6 +26,7 @@ It takes a list of telephone numbers who shall receive the message and returns a
 	//let's see how much this sms would cost us
 	_, quote := sms.GetQuote(receivers, msg)
 	price := quote * 3.75 * 0.01	//quote is in credits. 1 credit = 3.75 eur cent
+
 	fmt.Printf("the sms will cost us %.4f EUR\n", price)
 	
 	//send the sms
