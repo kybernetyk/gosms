@@ -81,7 +81,11 @@ func (sms *BulkSMSSMSSender) GetQuote(receivers []string, message string) (err o
 }
 
 
-//send a message to a single receiver
+//send a message to a list of receivers
+//a receiver is a string containing an international telephone number
+//without a leading + or 0. to send a sms to a german (+49) number
+//you'd use "49172xxxxxx"
+//the message strings max len is 160 chars
 func (sms *BulkSMSSMSSender) Send(receivers []string, message string) os.Error {
 	if sms.RoutingGroup < 1 || sms.RoutingGroup > 3 {
 		return os.NewError("Routing Group must be 1, 2 or 3!")
