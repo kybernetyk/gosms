@@ -1,8 +1,8 @@
 /* 
-A package for sending out SMS. Currently supports only bulksms.com
-but may support more services if the need should arrive.
+A package for sending out SMS. Currently works only with bulksms.com
+but may support more services if the need should arise.
 
-author: Leon Szpilewski / http://nntp.pl
+Author: Leon Szpilewski / http://nntp.pl
 */
 package sms 
 
