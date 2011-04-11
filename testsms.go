@@ -6,12 +6,12 @@ import (
 )
 
 func main() {
-	sms := sms.NewBulkSMSSMSSender("joorek", "warbird")
+	sms := sms.NewBulkSMSSMSSender("username", "password")
 	sms.Testmode = 0
 	sms.RoutingGroup = 1
 	
 	msg := "lol, hi. das ist ein test!"
-	receivers := []string{"492161531987"}//,"491722579081"}
+	receivers := []string{"49xxxxxx"}
 
 	err, quote := sms.GetQuote(receivers, msg)
 	if err != nil {
