@@ -47,3 +47,10 @@ It takes a list of telephone numbers who shall receive the message and returns a
 
 		fmt.Println("sms sent!")
 	}
+
+#License Contact Stuff
+
+(c) Leon Szpilewski 2011
+Licensed under MIT license
+
+http://nntp.pl
