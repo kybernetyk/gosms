@@ -1,3 +1,9 @@
+/* 
+A package for sending out SMS. Currently supports only bulksms.com
+but may support more services if the need should arrive.
+
+author: Leon Szpilewski / http://nntp.pl
+*/
 package sms 
 
 import (
