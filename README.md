@@ -31,7 +31,7 @@ It takes a list of telephone numbers who shall receive the message and returns a
 		s.RoutingGroup = 1 //let's use the cheap eco route
 
 		msg := "hi, this is a test"
-		receivers := []string{"491722579081"}
+		receivers := []string{"49xxxxxx"}  //put a proper tel# here in
 
 		//let's see how much this sms would cost us
 		_, quote := s.GetQuote(receivers, msg)
