@@ -56,5 +56,6 @@ Licensed under MIT license
 
 #Contact
 
-[http://nntp.pl]
-voidzone at me dot com
+[http://nntp.pl](http://nntp.pl)
+
+mailto: voidzone at me dot com
