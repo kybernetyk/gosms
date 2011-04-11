@@ -1,8 +1,10 @@
 include $(GOROOT)/src/Make.inc
 
-TARG=sms
+DEPS=\
+		 sms
+
+TARG=testsms
 GOFILES=\
-	sms.go\
-	main.go
+	testsms.go
 
 include $(GOROOT)/src/Make.cmd
