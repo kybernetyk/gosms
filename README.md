@@ -58,7 +58,7 @@ Licensed under MIT license
 
 #Contact
 
-email: leon.szpilewski@gmail.com
-twitter: @fettemama
-blog: http://fettemama.org
+	email: leon.szpilewski@gmail.com
+	twitter: @fettemama
+	blog: http://fettemama.org
 
