@@ -4,19 +4,20 @@ but may support more services if the need should arise.
 
 Author: Leon Szpilewski / http://nntp.pl
 */
-package sms 
+package sms
 
 import (
-	"os"
+	"errors"
 	"fmt"
-	"http"
 	"io/ioutil"
-	"strings"
+	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 )
 
 type SMSSender interface {
-	Send(receivers []string, message string) os.Error
+	Send(receivers []string, message string) error
 }
 
 //implements the bulksms.com http API
@@ -37,29 +38,35 @@ func NewBulkSMSSMSSender(username, password string) *BulkSMSSMSSender {
 	}
 }
 
-
 //get the total price (in CREDITS! NOT MONEYS!) for sending out a given message to a list of receivers.
 //for credit prices see bulksms.com
-func (sms *BulkSMSSMSSender) GetQuote(receivers []string, message string) (err os.Error, quote float64) {
+func (sms *BulkSMSSMSSender) GetQuote(receivers []string, message string) (err error, quote float64) {
 	if sms.RoutingGroup < 1 || sms.RoutingGroup > 3 {
-		err = os.NewError("Routing Group must be 1, 2 or 3!")
+		err = errors.New("Routing Group must be 1, 2 or 3!")
 		return
 	}
 	rtgrp := strconv.Itoa(sms.RoutingGroup)
 
-	url := "http://bulksms.vsms.net:5567/eapi/submission/quote_sms/2/2.0"
+	endpoint_url := "http://bulksms.vsms.net:5567/eapi/submission/quote_sms/2/2.0"
 	rcvrs := strings.Join(receivers, ",")
 
-	data := map[string]string{
-		"username":      sms.Username,
-		"password":      sms.Password,
-		"message":       message,
-		"msisdn":        rcvrs,
-		"routing_group": rtgrp,
-	}
+	// data := url.Values{
+	// 	"username":      sms.Username,
+	// 	"password":      sms.Password,
+	// 	"message":       message,
+	// 	"msisdn":        rcvrs,
+	// 	"routing_group": rtgrp,
+	// }
+
+	data := url.Values{}
+	data.Set("username", sms.Username)
+	data.Set("password", sms.Password)
+	data.Set("message", message)
+	data.Set("msisdn", rcvrs)
+	data.Set("routing_group", rtgrp)
 
 	c := &http.Client{}
-	resp, err := c.PostForm(url, data)
+	resp, err := c.PostForm(endpoint_url, data)
 	if err != nil {
 		return err, 0.0
 	}
@@ -71,49 +78,48 @@ func (sms *BulkSMSSMSSender) GetQuote(receivers []string, message string) (err o
 	resp.Body.Close()
 
 	respstr := strings.Trim(string(respbytes[0:]), "\r\n")
-	respitems := strings.Split(respstr, "|", -1)
+	respitems := strings.Split(respstr, "|")
 
-	respcode, err := strconv.Atoi64(respitems[0])
+	respcode, err := strconv.ParseInt(respitems[0], 10, 64)
 	if err != nil {
 		return err, 0.0
 	}
 
 	if respcode != 0 {
-		return os.NewError(fmt.Sprintf("err code %d: %s", respcode, respitems[1])), 0.0
+		return errors.New(fmt.Sprintf("err code %d: %s", respcode, respitems[1])), 0.0
 	}
 
-	quote, err = strconv.Atof64(respitems[2])
+	quote, err = strconv.ParseFloat(respitems[2], 64)
 	return
 }
-
 
 //sends a message to a list of receivers.
 //a receiver is a string containing an international telephone number
 //without a leading + or 0. to send a sms to a german (+49) number
 //you'd use "49172xxxxxx".
 //the message strings max len is 160 chars
-func (sms *BulkSMSSMSSender) Send(receivers []string, message string) os.Error {
+func (sms *BulkSMSSMSSender) Send(receivers []string, message string) error {
 	if sms.RoutingGroup < 1 || sms.RoutingGroup > 3 {
-		return os.NewError("Routing Group must be 1, 2 or 3!")
+		return errors.New("Routing Group must be 1, 2 or 3!")
 	}
 	rtgrp := strconv.Itoa(sms.RoutingGroup)
 
 	url := "http://bulksms.vsms.net:5567/eapi/submission/send_sms/2/2.0"
 	rcvrs := strings.Join(receivers, ",")
 
-	data := map[string]string{
-		"username":      sms.Username,
-		"password":      sms.Password,
-		"message":       message,
-		"msisdn":        rcvrs,
-		"routing_group": rtgrp,
+	data := map[string][]string{
+		"username":      []string{sms.Username},
+		"password":      []string{sms.Password},
+		"message":       []string{message},
+		"msisdn":        []string{rcvrs},
+		"routing_group": []string{rtgrp},
 	}
 
 	if sms.Testmode == -1 {
-		data["test_always_fail"] = "1"
+		data["test_always_fail"] = []string{"1"}
 	}
 	if sms.Testmode == 1 {
-		data["test_always_succeed"] = "1"
+		data["test_always_succeed"] = []string{"1"}
 	}
 
 	c := &http.Client{}
@@ -129,15 +135,15 @@ func (sms *BulkSMSSMSSender) Send(receivers []string, message string) os.Error {
 	resp.Body.Close()
 
 	respstr := string(respbytes[0:])
-	respitems := strings.Split(respstr, "|", -1)
+	respitems := strings.Split(respstr, "|")
 
-	respcode, err := strconv.Atoi64(respitems[0])
+	respcode, err := strconv.ParseInt(respitems[0], 10, 64)
 	if err != nil {
 		return err
 	}
 
 	if respcode != 0 {
-		return os.NewError(fmt.Sprintf("err code %d: %s", respcode, respitems[1]))
+		return errors.New(fmt.Sprintf("err code %d: %s", respcode, respitems[1]))
 	}
 
 	return nil
