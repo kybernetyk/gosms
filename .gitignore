@@ -9,3 +9,5 @@ _cgo_*
 _obj
 _test
 testsms
+gosms
+.DS_Store

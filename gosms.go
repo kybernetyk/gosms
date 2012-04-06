@@ -4,7 +4,7 @@ but may support more services if the need should arise.
 
 Author: Leon Szpilewski / http://github.com/jsz/gosms
 */
-package sms
+package gosms
 
 import (
 	"errors"

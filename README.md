@@ -21,12 +21,12 @@ It takes a list of telephone numbers who shall receive the message and returns a
 	package main
 
 	import (
-		"github.com/jsz/gosms/sms"
+		"github.com/jsz/gosms"
 		import "fmt"
 	)
 
 	func main() {
-		s := sms.NewBulkSMSSMSSender("username", "password")
+		s := gosms.NewBulkSMSSMSSender("username", "password")
 		s.Testmode = 1     //don't send the sms, just perform an API supported test
 		s.RoutingGroup = 1 //let's use the cheap eco route
 
@@ -50,12 +50,13 @@ It takes a list of telephone numbers who shall receive the message and returns a
 
 #License 
 
-(c) Leon Szpilewski 2011
+(c) Leon Szpilewski 2011, 2012
 
 Licensed under MIT license
 
 #Contact
 
-[http://nntp.pl](http://nntp.pl)
+email: leon.szpilewski@gmail.com
+twitter: @fettemama
+blog: http://fettemama.org
 
-mailto: voidzone at me dot com

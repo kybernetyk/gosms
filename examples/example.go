@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"./sms"
+	//"../"
+	"github.com/jsz/gosms"
 )
 
 func main() {
-	sms := sms.NewBulkSMSSMSSender("USERNAME", "PASSWORD")
+	sms := gosms.NewBulkSMSSMSSender("USERNAME", "PASSWORD")
 	sms.Testmode = 0
 	sms.RoutingGroup = 2
 	sms.SenderId = "Tabletten"
