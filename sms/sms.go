@@ -2,7 +2,7 @@
 A package for sending out SMS. Currently works only with bulksms.com
 but may support more services if the need should arise.
 
-Author: Leon Szpilewski / http://nntp.pl
+Author: Leon Szpilewski / http://github.com/jsz/gosms
 */
 package sms
 
@@ -22,11 +22,12 @@ type SMSSender interface {
 
 //implements the bulksms.com http API
 type BulkSMSSMSSender struct {
-	Username string
-	Password string
+	Username 		string 	// bulksms.com username
+	Password 		string 	// bulksms.com password
 
-	Testmode     int //0 - no testmode, 1 always succeed, -1 alswys fail
-	RoutingGroup int //1 - economy, 2 - standard (default), 3 - premium. see bulksms.com for pricing
+	Testmode     	int 	// 0 - no testmode, 1 always succeed, -1 alswys fail
+	RoutingGroup 	int 	// 1 - economy, 2 - standard (default), 3 - premium. see bulksms.com for pricing
+	SenderId 		string 	// the alphanumeric sender id - get it in your bulksms.com control panel, max 11 chars. this is CaseSensitive! MyId != Myid, won't work with econmoy (usually)
 }
 
 func NewBulkSMSSMSSender(username, password string) *BulkSMSSMSSender {
@@ -35,6 +36,7 @@ func NewBulkSMSSMSSender(username, password string) *BulkSMSSMSSender {
 		Password:     password,
 		Testmode:     0,
 		RoutingGroup: 2,
+		SenderId: "",
 	}
 }
 
@@ -50,20 +52,17 @@ func (sms *BulkSMSSMSSender) GetQuote(receivers []string, message string) (err e
 	endpoint_url := "http://bulksms.vsms.net:5567/eapi/submission/quote_sms/2/2.0"
 	rcvrs := strings.Join(receivers, ",")
 
-	// data := url.Values{
-	// 	"username":      sms.Username,
-	// 	"password":      sms.Password,
-	// 	"message":       message,
-	// 	"msisdn":        rcvrs,
-	// 	"routing_group": rtgrp,
-	// }
+	data := url.Values{
+		"username":      []string{sms.Username},
+		"password":      []string{sms.Password},
+		"message":       []string{message},
+		"msisdn":        []string{rcvrs},
+		"routing_group": []string{rtgrp},
+	}
 
-	data := url.Values{}
-	data.Set("username", sms.Username)
-	data.Set("password", sms.Password)
-	data.Set("message", message)
-	data.Set("msisdn", rcvrs)
-	data.Set("routing_group", rtgrp)
+	if len(sms.SenderId) > 0 {
+		data.Set("sender", sms.SenderId)
+	}
 
 	c := &http.Client{}
 	resp, err := c.PostForm(endpoint_url, data)
@@ -104,15 +103,19 @@ func (sms *BulkSMSSMSSender) Send(receivers []string, message string) error {
 	}
 	rtgrp := strconv.Itoa(sms.RoutingGroup)
 
-	url := "http://bulksms.vsms.net:5567/eapi/submission/send_sms/2/2.0"
+	endpoint_url := "http://bulksms.vsms.net:5567/eapi/submission/send_sms/2/2.0"
 	rcvrs := strings.Join(receivers, ",")
 
-	data := map[string][]string{
+	data := url.Values{
 		"username":      []string{sms.Username},
 		"password":      []string{sms.Password},
 		"message":       []string{message},
 		"msisdn":        []string{rcvrs},
 		"routing_group": []string{rtgrp},
+	}
+
+	if len(sms.SenderId) > 0 {
+		data.Set("sender", sms.SenderId)
 	}
 
 	if sms.Testmode == -1 {
@@ -123,7 +126,7 @@ func (sms *BulkSMSSMSSender) Send(receivers []string, message string) error {
 	}
 
 	c := &http.Client{}
-	resp, err := c.PostForm(url, data)
+	resp, err := c.PostForm(endpoint_url, data)
 	if err != nil {
 		return err
 	}
