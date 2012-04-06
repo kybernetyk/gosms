@@ -2,7 +2,7 @@
 
 ## Description
 
-Simple SMS sending library in Go. Currently uses the http API from bulksms.com.
+Simple SMS sending library for Go 1. Currently uses the http API from bulksms.com.
 
 ## Installation
 
@@ -13,9 +13,9 @@ Either clone this repository or use goinstall:
 
 If you want to send a SMS only one method is of interest for you:
 
-	Send(receivers []string, message string) os.Error
+	Send(receivers []string, message string) error
 
-It takes a list of telephone numbers who shall receive the message and returns an os.Error is something went wrong.
+It takes a list of telephone numbers who shall receive the message and returns an error if something went wrong.
 
 ## Example
 	package main
