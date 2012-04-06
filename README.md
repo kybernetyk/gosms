@@ -7,6 +7,7 @@ Simple SMS sending library for Go 1. Currently uses the http API from bulksms.co
 ## Installation
 
 Either clone this repository or use goinstall:
+	
 	$ [sudo -E] go get github.com/jsz/gosms
 	$ [sudo -E] go install github.com/jsz/gosms
 
