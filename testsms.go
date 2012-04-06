@@ -2,20 +2,23 @@ package main
 
 import (
 	"fmt"
-	"sms"
+	"./sms"
 )
 
 func main() {
-	sms := sms.NewBulkSMSSMSSender("username", "password")
+	sms := sms.NewBulkSMSSMSSender("USERNAME", "PASSWORD")
 	sms.Testmode = 0
-	sms.RoutingGroup = 1
+	sms.RoutingGroup = 2
+	sms.SenderId = "Tabletten"
 	
-	msg := "lol, hi. das ist ein test!"
-	receivers := []string{"49xxxxxx"}
+	msg := "https://github.com/jsz/gosms is awesome! -- sent from my Go"
 
+	receivers := []string{"49178xxxxxx", "49172xxxxxxxx", }
+
+	//quote gives you the cost of the sms in credits
 	err, quote := sms.GetQuote(receivers, msg)
 	if err != nil {
-		fmt.Println(err.String())
+		fmt.Println(err)
 		return
 	} 
 	price := quote * 3.75 * 0.01   //mad math skills calculate price in MONEYS
@@ -27,10 +30,9 @@ func main() {
 	}
 	
 	fmt.Printf("this sms will cost %.4f eur\n", price)
-	
 
     if err := sms.Send(receivers, msg); err != nil {
-        fmt.Println(err.String())
+        fmt.Println(err)
         return
     }
 
